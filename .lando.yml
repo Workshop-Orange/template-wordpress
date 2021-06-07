@@ -1,4 +1,4 @@
-name: wordpress-example
+name: template-wordpress
 recipe: lagoon
 config:
   flavor: wordpress

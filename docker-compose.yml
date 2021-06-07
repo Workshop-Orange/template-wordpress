@@ -2,7 +2,7 @@ version: '2.3'
 
 x-lagoon-project:
   # Lagoon project name (leave `&lagoon-project` when you edit this)
-  &lagoon-project wordpress-example
+  &lagoon-project template-wordpress
 
 x-volumes:
   &default-volumes
@@ -14,7 +14,7 @@ x-environment:
   &default-environment
     LAGOON_PROJECT: *lagoon-project
     # Route that should be used locally
-    LAGOON_ROUTE: http://wordpress-nginx.docker.amazee.io
+    LAGOON_ROUTE: http://template-wordpress-nginx.docker.amazee.io
     # Uncomment if you like to have the system behave like in production
     #LAGOON_ENVIRONMENT_TYPE: production
     # Uncomment to enable xdebug and then restart via `docker-compose up -d`
@@ -25,7 +25,7 @@ services:
 
   cli: # cli container, will be used for executing composer and any local commands (wpcli etc.)
     build:
-      context: .
+      context: wordpress
       dockerfile: lagoon/cli.dockerfile
     image: *lagoon-project # this image will be reused as `CLI_IMAGE` in subsequent Docker builds
     labels:
@@ -42,7 +42,7 @@ services:
 
   nginx:
     build:
-      context: .
+      context: wordpress
       dockerfile: lagoon/nginx.dockerfile
       args:
         CLI_IMAGE: *lagoon-project # Inject the name of the cli image
@@ -61,7 +61,7 @@ services:
 
   php:
     build:
-      context: .
+      context: wordpress
       dockerfile: lagoon/php.dockerfile
       args:
         CLI_IMAGE: *lagoon-project
@@ -96,7 +96,7 @@ services:
       - nginx # links varnish to the nginx in this docker-compose project, or it would try to connect to any nginx running in docker
     environment:
       << : *default-environment
-      LAGOON_LOCALDEV_URL: wordpress-varnish.docker.amazee.io # generate another route for varnish
+      LAGOON_LOCALDEV_URL: template-wordpress-varnish.docker.amazee.io # generate another route for varnish
     networks:
       - amazeeio-network
       - default
